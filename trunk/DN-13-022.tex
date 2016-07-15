@@ -1,0 +1,142 @@
+% Customizable fields and text areas start with % >> below.
+% Lines starting with the comment character (%) are normally removed before release outside the collaboration, but not those comments ending lines
+
+% svn info. These are modified by svn at checkout time.
+% The last version of these macros found before the maketitle will be the one on the front page,
+% so only the main file is tracked.
+% Do not edit by hand!
+\RCS$Revision: 315441 $
+\RCS$HeadURL: svn+ssh://pakhotin@svn.cern.ch/reps/tdr2/notes/DN-13-022/trunk/DN-13-022.tex $
+\RCS$Id: DN-13-022.tex 315441 2015-12-17 00:18:24Z pakhotin $
+%%%%%%%%%%%%% local definitions %%%%%%%%%%%%%%%%%%%%%
+% This allows for switching between one column and two column (cms@external) layouts
+% The widths should  be modified for your particular figures. You'll need additional copies if you have more than one standard figure size.
+\newlength\cmsFigWidth
+\ifthenelse{\boolean{cms@external}}{\setlength\cmsFigWidth{0.85\columnwidth}}{\setlength\cmsFigWidth{0.4\textwidth}}
+\ifthenelse{\boolean{cms@external}}{\providecommand{\cmsLeft}{top}}{\providecommand{\cmsLeft}{left}}
+\ifthenelse{\boolean{cms@external}}{\providecommand{\cmsRight}{bottom}}{\providecommand{\cmsRight}{right}}
+%%%%%%%%%%%%%%%  Title page %%%%%%%%%%%%%%%%%%%%%%%%
+\cmsNoteHeader{DN-13-022} % This is over-written in the CMS environment: useful as preprint no. for export versions
+% >> Title: please make sure that the non-TeX equivalent is in PDFTitle below
+\title{ME1/1 Local Trigger Algorithm \\ for Operation under High Pile-Up Running Conditions}
+
+% >> Authors
+%Author is always "The CMS Collaboration" for PAS and papers, so author, etc, below will be ignored in those cases
+%For multiple affiliations, create an address entry for the combination
+%To mark authors as primary, use the \author* form
+%\address[ghent]{Ghent University}
+\address[tamu]{Texas A\&M University}
+\address[ucla]{University of California, Los Angeles}
+\address[ufl]{University of Florida}
+\author[tamu]{Sven Dildick}
+\author[tamu]{Jose Roberto Dimas Valle}
+\author[tamu]{Jason Gilmore}
+\author[ucla]{Jay Hauser}
+\author[tamu]{Tao Huang}
+\author[tamu]{Vadim Khotilovich}
+\author[tamu]{Vyacheslav Krutelyov}
+\author[ufl]{Alexander Madorsky}
+\author[tamu]{Yuriy Pakhotin}
+\author[ucla]{Andrew Peck}
+\author[tamu]{Alexei Safonov}
+\author[tamu]{Aysen Tatarinov}
+\author[ucla]{Vyacheslav Valuev}
+
+% >> Date
+% The date is in yyyy/mm/dd format. Today has been
+% redefined to match, but if the date needs to be fixed, please write it in this fashion.
+% For papers and PAS, \today is taken as the date the head file (this one) was last modified according to svn: see the RCS Id string above.
+% For the final version it is best to "touch" the head file to make sure it has the latest date.
+\date{\today}
+
+% >> Abstract
+% Abstract processing:
+% 1. **DO NOT use \include or \input** to include the abstract: our abstract extractor will not search through other files than this one.
+% 2. **DO NOT use %**                  to comment out sections of the abstract: the extractor will still grab those lines (and they won't be comments any longer!).
+% 3. For PASs: **DO NOT use tex macros**         in the abstract: CDS MathJax processor used on the abstract doesn't understand them _and_ will only look within $$. The abstracts for papers are hand formatted so macros are okay.
+\abstract{
+An important piece of the CMS muon trigger upgrade is developing and maintaining FPGA firmware for new custom electronics - optical trigger mother-board for ME1/1 muon detectors. This firmware uses massively parallel pattern recognition algorithm to find quality muon stubs. An improved local trigger algorithm to perform sophisticated background rejection is developed for operation under high pile-up running conditions. Implementation of the improvements to the algorithm is described. Configuration of the CMS software for the algorithm simulation is specified. Individual effects of the improvements on the ME1/1 local trigger efficiency are quantified and ranked using simulated samples.
+}
+
+% >> PDF Metadata
+% Do not comment out the following hypersetup lines (metadata). They will disappear in NODRAFT mode and are needed by CDS.
+% Also: make sure that the values of the metadata items are sensible and are in plain text:
+% (1) no TeX! -- for \sqrt{s} use sqrt(s) -- this will show with extra quote marks in the draft version but is okay).
+% (2) no %.
+% (3) No curly braces {}.
+\hypersetup{%
+pdfauthor={Aysen Tatarinov, Yuriy Pakhotin},%
+pdftitle={ME1/1 Local Trigger Algorithm for Operation under High Pile-Up Running Conditions},%
+pdfsubject={CMS},%
+pdfkeywords={LHC, CMS, Muons, CSC, Trigger}}
+
+\maketitle %maketitle comes after all the front information has been supplied
+% >> Text
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  Begin text %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% **DO NOT REMOVE THE BIBLIOGRAPHY** which is located before the appendix.
+%% You can take the text between here and the bibiliography as an example which you should replace with the actual text of your document.
+%% If you include other TeX files, be sure to use "\input{filename}" rather than "\input filename".
+%% The latter works for you, but our parser looks for the braces and will break when uploading the document.
+
+\tableofcontents
+
+\newpage
+\tracinginput{sections/sec_introduction.tex}
+%\input{sections/sec_introduction}
+\clearpage
+
+\newpage
+\tracinginput{sections/sec_endcap_trigger.tex}
+%\input{sections/sec_endcap_trigger}
+\clearpage
+
+\newpage
+\tracinginput{sections/sec_endcap_upgrade.tex}
+%\input{sections/sec_endcap_upgrade}
+\clearpage
+
+\newpage
+\tracinginput{sections/sec_algorithm.tex}
+%\input{sections/sec_algorithm}
+\clearpage
+
+\newpage
+\tracinginput{sections/sec_algorithm_alct.tex}
+%\input{sections/sec_algorithm_alct}
+\clearpage
+
+\newpage
+\tracinginput{sections/sec_algorithm_clct.tex}
+%\input{sections/sec_algorithm_clct}
+\clearpage
+
+\newpage
+\tracinginput{sections/sec_algorithm_lct.tex}
+%\input{sections/sec_algorithm_lct}
+\clearpage
+
+% >> acknowledgements (for journal papers)
+% Please include the latest version from https://twiki.cern.ch/twiki/bin/viewauth/CMS/Internal/PubAcknow.
+%\section*{Acknowledgements}
+% ack-text
+
+%% **DO NOT REMOVE BIBLIOGRAPHY**
+\bibliography{auto_generated}   % will be created by the tdr script.
+%\input{DN-13-022.bib}
+
+\appendix
+
+\newpage
+\tracinginput{sections/app_me11.tex}
+%\input{sections/app_me11}
+\clearpage
+
+\newpage
+\tracinginput{sections/app_configuration.tex}
+%\input{sections/app_configuration}
+\clearpage
+
+\newpage
+\tracinginput{sections/app_results.tex}
+%\input{sections/app_results}
+\clearpage

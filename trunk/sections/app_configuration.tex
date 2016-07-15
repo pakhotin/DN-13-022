@@ -1,0 +1,293 @@
+\section{Configuration of the Local Trigger Algorithm in the CMS Software}
+
+For simulated studies the local trigger algorithm is emulated in the CMS software\footnote{See actual code in \url{https://github.com/cms-sw/cmssw/tree/CMSSW\_6\_2\_X\_SLHC/L1Trigger/CSCTriggerPrimitives}}:
+\begin{itemize}
+\item branch: \verb|CMSSW_6_2_X_SLHC|
+\item package: \verb|L1Trigger/CSCTriggerPrimitives|.
+\end{itemize}
+The software emulator is divided in three logical levels:
+\begin{enumerate}
+\item ALCT processing\footnote{ALCT processing emulator defined in \url{https://github.com/cms-sw/cmssw/blob/CMSSW\_6\_2\_X\_SLHC/L1Trigger/CSCTriggerPrimitives/src/CSCAnodeLCTProcessor.cc}},
+\item CLCT processing\footnote{CLCT processing emulator defined in \url{https://github.com/cms-sw/cmssw/blob/CMSSW\_6\_2\_X\_SLHC/L1Trigger/CSCTriggerPrimitives/src/CSCCathodeLCTProcessor.cc}},
+\item ALCT and CLCT matching\footnote{ALCT and CLCT matching defined in \url{https://github.com/cms-sw/cmssw/blob/CMSSW\_6\_2\_X\_SLHC/L1Trigger/CSCTriggerPrimitives/src/CSCMotherboard.cc}}.
+\end{enumerate}
+Each part of the emulator has its own set of parameters listed in the following Sections.
+
+\subsection{Algorithm Selection and Common Configuration}
+\label{subsec:algo_selection}
+
+There are three main local trigger algorithms emulated in the CMS software:
+\begin{enumerate}
+\item \textcolor{red}{MTCC} --- algorithm developed for Magnet Test and Cosmic Challenge studies,
+\item \textcolor{red}{TMB07} --- default (before upgrade) algorithm for LHC Run 1 studies,
+\item \textcolor{red}{SLHC} --- new algorithm for studies of operation under high pile-up running conditions.
+\end{enumerate}
+Selection of the algorithm in software emulator is configured using the following parameters:
+\begin{center}
+\begin{tabular}{|l|c|c|c|}
+\hline
+   & \multicolumn{3}{c|}{Algorithm}\\
+\hline
+   & \textcolor{red}{MTCC} & \textcolor{red}{TMB07} & \textcolor{red}{SLHC} \\
+\hline
+\hline
+\textcolor{blue}{\texttt{isMTCC}} & True & \multicolumn{2}{c|}{False} \\
+\hline
+\textcolor{blue}{\texttt{isTMB07}} & False & \multicolumn{2}{c|}{True} \\
+\hline
+\textcolor{blue}{\texttt{isSLHC}}  & False & False & True \\
+\hline
+\end{tabular}
+\end{center}
+The \textcolor{red}{SLHC} algorithm is strongly depends on \textcolor{red}{TMB07} algorithm, and, thus, requires both \textcolor{blue}{\texttt{isTMB07}} and \textcolor{blue}{\texttt{isSLHC}} to be set to True. The \textcolor{red}{MTCC} algorithm is not subject of the studies performed in this paper, therefore it is omitted from the following descriptions.
+
+Configuration parameters common for all levels of the algorithm processing are the following:
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+   & \textcolor{red}{TMB07} & \textcolor{red}{SLHC} \\
+\hline
+\hline
+\textcolor{blue}{\texttt{smartME1aME1b}} & False & True \\
+\hline
+\textcolor{blue}{\texttt{gangedME1a}} & True & False \\
+\hline
+\textcolor{blue}{\texttt{disableME1a}} & \multicolumn{2}{c|}{False} \\
+\hline
+\textcolor{blue}{\texttt{disableME42}} & \multicolumn{2}{c|}{False} \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+\item \textcolor{blue}{\texttt{smartME1aME1b}} --- allows one ALCT finder and two CLCT finders per ME1/1 chamber with additional logic for ALCT and CLCT matching with ME1/1a unganged. It allows to set the following CLCT processing configuration parameters in \textcolor{red}{SLHC} algorithm:
+  \begin{itemize}
+  \item \textcolor{blue}{\texttt{useDeadTimeZoning}}
+  \item \textcolor{blue}{\texttt{clctStateMachineZone}}
+  \item \textcolor{blue}{\texttt{useDynamicStateMachineZone}}
+  \item \textcolor{blue}{\texttt{clctPretriggerTriggerZone}}
+  \item \textcolor{blue}{\texttt{use\_corrected\_bx}}
+  \end{itemize}
+\item \textcolor{blue}{\texttt{gangedME1a}} --- has effect only if \textcolor{blue}{\texttt{smartME1aME1b}}=True and defines number of readout channels from ME1/1a:
+  \begin{itemize}
+  \item all 48 cathode strips triple ganged into 16 strip groups, read out by 1 CFEB (default in \textcolor{red}{TMB07})
+  \item all 48 cathode strips are separately read out by 3 DCFEBs (default in \textcolor{red}{SLHC})
+  \end{itemize}
+\item \textcolor{blue}{\texttt{disableME1a}} and \textcolor{blue}{\texttt{disableME42}} --- allow to disable finding stubs in ME1/1a or ME4/2 chambers.
+\end{itemize}
+
+\subsection{Configuration of the ALCT Processing Emulator}
+\label{sec:ALCT_conf}
+
+There are 18 configuration parameters for the ALCT processing emulator with 5 of them different between \textcolor{red}{TMB07} and \textcolor{red}{SLHC}. List of all parameters is the following:
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+  & \textcolor{red}{TMB07} & \textcolor{red}{SLHC} \\
+\hline
+\hline
+\textcolor{blue}{\texttt{alctFifoTbins}} & \multicolumn{2}{c|}{16} \\
+\hline
+\textcolor{blue}{\texttt{alctFifoPretrig}} & \multicolumn{2}{c|}{10} \\
+\hline
+\textcolor{blue}{\texttt{alctDriftDelay}} & \multicolumn{2}{c|}{2} \\
+\hline
+\textcolor{blue}{\texttt{alctNplanesHitPretrig}} & \multicolumn{2}{c|}{3} \\
+\hline
+\textcolor{blue}{\texttt{alctNplanesHitPattern}} & \multicolumn{2}{c|}{4} \\
+\hline
+\textcolor{blue}{\texttt{alctNplanesHitAccelPretrig}} & \multicolumn{2}{c|}{3} \\
+\hline
+\textcolor{blue}{\texttt{alctNplanesHitAccelPattern}} & \multicolumn{2}{c|}{4} \\
+\hline
+\textcolor{blue}{\texttt{alctTrigMode}} & \multicolumn{2}{c|}{2} \\
+\hline
+\textcolor{blue}{\texttt{alctAccelMode}} & \multicolumn{2}{c|}{0} \\
+\hline
+\textcolor{blue}{\texttt{alctL1aWindowWidth}} & \multicolumn{2}{c|}{7} \\
+\hline
+\textcolor{blue}{\texttt{verbosity}} & \multicolumn{2}{c|}{0} \\
+\hline
+\textcolor{blue}{\texttt{alctEarlyTbins}} & \multicolumn{2}{c|}{4} \\
+\hline
+\textcolor{blue}{\texttt{alctNarrowMaskForR1}} & False & True \\
+\hline
+\textcolor{blue}{\texttt{alctHitPersist}} & \multicolumn{2}{c|}{6} \\
+\hline
+\textcolor{blue}{\texttt{alctGhostCancellationBxDepth}}  & 4 & 1 \\
+\hline
+\textcolor{blue}{\texttt{alctGhostCancellationSideQuality}} & False & True \\
+\hline
+\textcolor{blue}{\texttt{alctPretrigDeadtime}} & 4 & 0 \\
+\hline
+\textcolor{blue}{\texttt{alctUseCorrectedBx}} & --- & True \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+  \item \textcolor{blue}{\texttt{alctFifoTbins}} --- width of ALCT FIFO window in BX clocks\footnote{Note, that 1 BX clock = 25 ns}. Total number of time bins in ALCT DAQ readout, which thus determines the maximum length of readout time interval.
+  \item \textcolor{blue}{\texttt{alctFifoPretrig}} --- width of ALCT FIFO window in BX clocks where pretrigger can happen. Anode raw hits in DAQ readout start \textcolor{blue}{\texttt{alctFifoPretrig}}$-$\texttt{fpga\_latency}\footnote{\texttt{fpga\_latency} $=6$, as determined in \url{https://github.com/cms-sw/cmssw/blob/CMSSW\_6\_2\_X\_SLHC/L1Trigger/CSCTriggerPrimitives/src/CSCAnodeLCTProcessor.cc\#L229}} BX clocks before L1A.The \textcolor{blue}{\texttt{alctFifoPretrig}} parameter should be shorter than \textcolor{blue}{\texttt{alctFifoTbins}} by the sum of \textcolor{blue}{\texttt{alctDriftDelay}} and \textcolor{blue}{\texttt{alctPretrigDeadtime}}.
+  \item \textcolor{blue}{\texttt{alctDriftDelay}} --- drift delay in BX clocks after pre-trigger. If pretrigger happen in BX = B, then trigger is checked in BX = B + \textcolor{blue}{\texttt{alctDriftDelay}}.
+  \item \textcolor{blue}{\texttt{alctNplanesHitPretrig}} --- minimum number of layers with hits for pretrigger in ``collision'' pattern for a particular key WG.
+  \item \textcolor{blue}{\texttt{alctNplanesHitPattern}} --- minimum number of layers with hits for trigger in ``collision'' pattern for a particular key WG.
+  \item \textcolor{blue}{\texttt{alctNplanesHitAccelPretrig}} --- minimum number of layers with hits for pretrigger in ``accelerator'' pattern for a particular key WG.
+  \item \textcolor{blue}{\texttt{alctNplanesHitAccelPattern}} --- minimum number of layers with hits for trigger in ``accelerator'' pattern for a particular key WG.
+  \item \textcolor{blue}{\texttt{alctTrigMode}} --- enables/disables either ``collision'' or ``accelerator'' stubs:
+  \begin{itemize}
+    \item $=0$ --- enables both ``collision'' or ``accelerator'' stubs,
+    \item $=1$ --- disables ``collision'' stub,
+    \item $=2$ --- disables ``accelerator'' stub (default in \textcolor{red}{TMB07} and \textcolor{red}{SLHC}),
+    \item $=3$ --- disables ``collision'' stub if there is an ``accelerator'' stub found in the same wire group at the same time.
+  \end{itemize}
+  \item \textcolor{blue}{\texttt{alctAccelMode}} --- sets preference to either ``accelerator'' or ``collision'' stubs, current mode ignores ``accelerator'' patterns completely:
+  \begin{itemize}
+      \item $=0$ --- ignore ``accelerator'' stubs (default in \textcolor{red}{TMB07} and \textcolor{red}{SLHC}),
+      \item $=1$ --- prefer ``collision'' stubs by adding promotion bit,
+      \item $=2$ --- prefer ``accelerator'' stubs by adding promotion bit,
+      \item $=3$ --- ignore ``collision'' stubs.
+    \end{itemize}
+  \item \textcolor{blue}{\texttt{alctL1aWindowWidth}} --- width of L1A window in BX clocks, the window spans from \textcolor{blue}{\texttt{alctEarlyTbins}} to \textcolor{blue}{\texttt{alctEarlyTbins}}+\textcolor{blue}{\texttt{alctL1aWindowWidth}}.
+  \item \textcolor{blue}{\texttt{verbosity}} --- turns on debugging messages during ALCT processing.
+  \item \textcolor{blue}{\texttt{alctNarrowMaskForR1}} --- enables/disables narrow ALCT pattern for chambers in Ring 1 (see Fig.~\ref{fig:narrow_alct_pattern_mask}).
+  \item \textcolor{blue}{\texttt{alctHitPersist}} --- sets persistence of anode wire hits in BX clocks to signify the duration of a signal.
+  \item \textcolor{blue}{\texttt{alctGhostCancellationBxDepth}} --- configures up to how many BX clocks in the past ghost cancellation in neighboring WGs (N+1 and N-1) for a stub in current WG=N may happen.
+  \item \textcolor{blue}{\texttt{alctGhostCancellationSideQuality}} --- enebles/disables whether to compare the quality of stubs in neighboring WGs (N-1 and N+1) in the past to the quality of a stub in current WG=N when doing ghost cancellation .
+  \item \textcolor{blue}{\texttt{alctPretrigDeadtime}} --- defines how soon after pretrigger and \textcolor{blue}{\texttt{alctDriftDelay}} can next pretrigger happen. This is extra in addition to drift delay, so total deadtime = \textcolor{blue}{\texttt{alctDriftDelay}} + \textcolor{blue}{\texttt{alctPretrigDeadtime}}.
+  \item \textcolor{blue}{\texttt{alctUseCorrectedBx}} --- defines whether to calculate ``corrected'' ALCT stub time (currently it is median time of hits in a pattern) instead of pretrigger one. Implemented only in \textcolor{red}{SLHC} algorithm.
+\end{itemize}
+
+\newpage
+
+\subsection{Configuration of the CLCT Processing Emulator}
+\label{sec:CLCT_conf}
+
+Configuration parameters for the CLCT level of the algorithm processing are the following:
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+  & \textcolor{red}{TMB07} & \textcolor{red}{SLHC} \\
+\hline
+\hline
+\textcolor{blue}{\texttt{clctFifoTbins}} & \multicolumn{2}{c|}{12} \\
+\hline
+\textcolor{blue}{\texttt{clctFifoPretrig}} & \multicolumn{2}{c|}{7} \\
+\hline
+\textcolor{blue}{\texttt{clctHitPersist}} & \multicolumn{2}{c|}{4} \\
+\hline
+\textcolor{blue}{\texttt{clctDriftDelay}} & \multicolumn{2}{c|}{2} \\
+\hline
+\textcolor{blue}{\texttt{clctNplanesHitPretrig}} & \multicolumn{2}{c|}{3} \\
+\hline
+\textcolor{blue}{\texttt{clctNplanesHitPattern}} & \multicolumn{2}{c|}{4} \\
+\hline
+\textcolor{blue}{\texttt{clctPidThreshPretrig}} & 2 & 4 \\
+\hline
+\textcolor{blue}{\texttt{clctMinSeparation}}  & 10 & 5 \\
+\hline
+\textcolor{blue}{\texttt{verbosity}} & \multicolumn{2}{c|}{0} \\
+\hline
+\textcolor{blue}{\texttt{useDeadTimeZoning}} & --- & True \\
+\hline
+\textcolor{blue}{\texttt{clctStateMachineZone}} & --- & 8 \\
+\hline
+\textcolor{blue}{\texttt{useDynamicStateMachineZone}} & --- & True \\
+\hline
+\textcolor{blue}{\texttt{clctPretriggerTriggerZone}} & --- & 5 \\
+\hline
+\textcolor{blue}{\texttt{clctUseCorrectedBx}} & --- & True \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{itemize}	
+  \item \textcolor{blue}{\texttt{clctFifoTbins}} --- width of FIFO data window in bunch crossing clocks
+  \item \textcolor{blue}{\texttt{clctFifoPretrig}} --- width of FIFO data window in bunch crossing clocks where pretrigger can occur
+  \item \textcolor{blue}{\texttt{clctHitPersist}} --- cathode strip hits are stretched to this number of bunch crossings
+  \item \textcolor{blue}{\texttt{clctDriftDelay}} --- if pretrigger occured in BX N, then the occurence of trigger is checked in BX = N + \textcolor{blue}{clctDriftDelay}
+  \item \textcolor{blue}{\texttt{clctNplanesHitPretrig}} --- number of layers with hits required for pretriggering
+  \item \textcolor{blue}{\texttt{clctNplanesHitPattern}} --- number of layers with hits required for triggering
+  \item \textcolor{blue}{\texttt{clctPidThreshPretrig}}: increase pattern ID threshold from 2 to 4 to trigger on higher pt tracks
+  \item \textcolor{blue}{\texttt{clctMinSeparation}}: minimal allowed separation in half-strips between two CLCTs in one BX
+  \item \textcolor{blue}{\texttt{verbosity}} --- turns on debugging messages during CLCT processing
+  \item \textcolor{blue}{\texttt{useDeadTimeZoning}}: in 2007 algorithm after a CLCT trigger occured the whole CLCT processor is frozen for several bunch crossings until the number of layers with hits drops below the triggering threshold, in SLHC algorithm strips within certain dead zone are marked as busy:
+  \begin{itemize}
+    \item \textcolor{blue}{\texttt{useDeadTimeZoning}} --- enables usage of such a dead zone
+    \item \textcolor{blue}{\texttt{clctStateMachineZone}} --- width of a fixed dead zone around a key half-strip \\ (in half-strips)
+    \item \textcolor{blue}{\texttt{useDynamicStateMachineZone}}: use variable dead zone which depends on the width of triggered CLCT pattern (changes from 10 half-strips for the most bent patterns to 2 half-strips for the most straight pattern)
+    \item \textcolor{blue}{\texttt{clctPretriggerTriggerZone}}: width of a fixed dead zone around a key pretrigger \\ (in half-strips)
+  \end{itemize}
+  \item \textcolor{blue}{\texttt{clctUseCorrectedBx}}: ``corrected'' CLCT stub time --- use median time of all hits to set CLCT time
+\end{itemize}
+
+\newpage
+
+\subsection{Configuration of the ALCT and CLCT Matching Emulator}
+\label{sec:TMB_conf}
+
+Configuration parameters for the ALCT and CLCT matching part of the algorithm processing are the following:
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+  & \textcolor{red}{TMB07} & \textcolor{red}{SLHC} \\
+\hline
+\hline
+\textcolor{blue}{\texttt{mpcBlockMe1a}} & \multicolumn{2}{c|}{0} \\
+\hline
+\textcolor{blue}{\texttt{alctTrigEnable}} & \multicolumn{2}{c|}{0} \\
+\hline
+\textcolor{blue}{\texttt{clctTrigEnable}} & \multicolumn{2}{c|}{0} \\
+\hline
+\textcolor{blue}{\texttt{matchTrigEnable}} & \multicolumn{2}{c|}{1} \\
+\hline
+\textcolor{blue}{\texttt{matchTrigWindowSize}} & 7 & 3 \\
+\hline
+\textcolor{blue}{\texttt{tmbL1aWindowSize}} & \multicolumn{2}{c|}{7} \\
+\hline
+\textcolor{blue}{\texttt{verbosity}} & \multicolumn{2}{c|}{0} \\
+\hline
+\textcolor{blue}{\texttt{tmbEarlyTbins}} & \multicolumn{2}{c|}{4} \\
+\hline
+\textcolor{blue}{\texttt{tmbReadoutEarliest2}}  & True & False \\
+\hline
+\textcolor{blue}{\texttt{tmbDropUsedAlcts}} & True & False \\
+\hline
+\textcolor{blue}{\texttt{clctToAlct}} & --- & False \\
+\hline
+\textcolor{blue}{\texttt{tmbDropUsedClcts}} & --- & False \\
+\hline
+\textcolor{blue}{\texttt{matchEarliestAlctME11Only}} & --- & False \\
+\hline
+\textcolor{blue}{\texttt{matchEarliestClctME11Only}} & --- & False \\
+\hline
+\textcolor{blue}{\texttt{tmbCrossBxAlgorithm}} & --- & True \\
+\hline
+\textcolor{blue}{\texttt{maxME11LCTs}} & --- & 2 \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+  \item \textcolor{blue}{\texttt{mpcBlockMe1a}} --- disables reporting LCTs found in ME1a
+  \item \textcolor{blue}{\texttt{alctTrigEnable}} --- enables ALCT-only LCTs if there are no CLCTs
+  \item \textcolor{blue}{\texttt{clctTrigEnable}} --- enables CLCT-only LCTs if there are no ALCTs
+  \item \textcolor{blue}{\texttt{matchTrigEnable}} --- enables LCTs constructed from valid ALCTs and CLCTs
+  \item \textcolor{blue}{\texttt{matchTrigWindowSize}}: rather wide time matching window (7BX) in 2007 algorithm , decrease to 3BX in SLHC algorithm
+  \item \textcolor{blue}{\texttt{tmbL1aWindowWidth}} --- width of L1A window in bunch crossing clocks, the L1 window spans from \textcolor{blue}{tmbEarlyTbins} to \textcolor{blue}{tmbEarlyTbins}+\textcolor{blue}{alctL1aWindowWidth}
+  \item \textcolor{blue}{\texttt{verbosity}} --- turns on debugging messages during TMB emulation
+  \item \textcolor{blue}{\texttt{tmbReadoutEarliest2}}: read out only first 2 LCTs in L1A window
+  \item \textcolor{blue}{\texttt{clctToAlct}}: stub matching logic --- either CLCT-centric or ALCT-centric
+  \begin{itemize}
+    \item CLCT-centric matching, default non-upgrade behavior
+    \item ALCT-centric matching, recommended for SLHC
+  \end{itemize}
+  \item \textcolor{blue}{\texttt{tmbDropUsedAlcts}}: in CLCT-centric matching, whether to use already matched ALCTs for further matching, analogously for \textcolor{blue}{tmbDropUsedClcts}
+  \item \textcolor{blue}{\texttt{matchEarliestAlctME11Only}}: in CLCT-centric matching in ME11, break after finding the first BX with matching ALCT, analogously for \textcolor{blue}{matchEarliestClctME11Only}
+  \item \textcolor{blue}{\texttt{tmbCrossBxAlgorithm}}: instead of matching CLCTs to ALCTs (or vise versa) in the order of arrival time, start matching in the central BX, then in the previous and the next BX
+  \item \textcolor{blue}{\texttt{maxME11LCTs}}: how many maximum LCTs per whole ME11 chamber per BX to keep (ME1b and ME1a can have max 2 each)
+\end{itemize}
+
+\newpage
